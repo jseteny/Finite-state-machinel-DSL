@@ -36,13 +36,16 @@ object DfaDsl {
     )
   }
 
-  object S0 extends State
+  sealed trait State
 
-  object S1 extends State
+  final case object S0 extends State
 
-  object S2 extends State
+  final case object S1 extends State
 
-  object S3 extends State
+  final case object S2 extends State
+
+  final case object S3 extends State
+
 
   class DfaBuilder() {
     var states: Seq[State] = Seq()
@@ -86,7 +89,9 @@ object DfaDsl {
                   loop(to, futureInput.head, futureInput.tail, allTransitions)
 
               case Transition(_, _, _) :: Nil =>
-                false
+                throw new Exception(
+                  s"You must provide transition function for input '$input' when state is $from"
+                )
 
               case _ =>
                 loop(from, input, futureInput, remainingTransitions.tail)
@@ -101,8 +106,6 @@ object DfaDsl {
     }
 
   }
-
-  trait State
 
   case class Transition(on: Char, from: State, to: State)
 
